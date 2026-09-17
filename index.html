@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mrs. GREEN APPLE">
+<link rel="manifest" href="manifest.webmanifest">
+<title>My Mrs. GREEN APPLE</title>
+<style>
+:root{--green:#1f8f58;--bg:#f7f8f7;--card:#fff;--text:#202522;--muted:#7b837e;--line:#e7ebe8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif;color:var(--text)}
+.app{max-width:520px;margin:auto;min-height:100vh;padding-bottom:88px}.top{padding:20px 18px 12px;background:#fff;position:sticky;top:0;z-index:4;border-bottom:1px solid var(--line)}
+.brand{font-weight:800;font-size:20px}.sub{font-size:12px;color:var(--muted);margin-top:3px}
+main{padding:14px}.hero{background:#111;color:white;border-radius:22px;padding:18px;margin-bottom:14px}
+.hero .small{font-size:11px;letter-spacing:1.5px;opacity:.7}.hero h1{font-size:27px;margin:5px 0}.hero p{margin:0;opacity:.78}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:15px}.stat b{font-size:22px}.stat span{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.section{margin-top:18px}.section h2{font-size:16px;margin:0 0 9px}.row{display:flex;gap:10px;overflow:auto}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;min-width:155px}.icon{font-size:25px}.card b{display:block;margin-top:7px}.muted{color:var(--muted);font-size:12px}.list{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden}.item{padding:14px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px}.item:last-child{border:0}.item .grow{flex:1}.pill{font-size:10px;padding:5px 8px;border-radius:99px;background:#edf6f0;color:var(--green);white-space:nowrap}
+nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.96);border-top:1px solid var(--line);display:flex;justify-content:center;z-index:10;padding:8px env(safe-area-inset-right) calc(8px + env(safe-area-inset-bottom)) env(safe-area-inset-left)}
+.navin{max-width:520px;width:100%;display:grid;grid-template-columns:repeat(6,1fr)}nav button{border:0;background:none;font-size:10px;color:#707772;padding:4px 0}nav button .ni{display:block;font-size:21px;margin-bottom:2px}nav button.active{color:var(--green);font-weight:700}
+button.primary{border:0;background:#111;color:#fff;border-radius:13px;padding:11px 14px;font-weight:700}.fab{position:fixed;right:18px;bottom:82px;width:52px;height:52px;border:0;border-radius:50%;background:var(--green);color:#fff;font-size:27px;box-shadow:0 6px 18px #0002;z-index:8}
+form{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:14px}label{display:block;font-size:12px;color:var(--muted);margin:9px 0 5px}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:11px;font:inherit;background:#fafbfa}textarea{min-height:90px}.empty{padding:25px;text-align:center;color:var(--muted)}
+.tabs{display:flex;gap:7px;overflow:auto;margin-bottom:12px}.tabs button{border:1px solid var(--line);background:#fff;border-radius:99px;padding:8px 12px;white-space:nowrap}.tabs button.on{background:#111;color:#fff}
+h3{margin:0;font-size:15px}.money{font-size:28px;font-weight:800}.danger{color:#b64242}.check{color:var(--green)}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div class="brand">Mrs. GREEN APPLE 🍏</div><div class="sub">MY FAN APP</div></header>
+<main id="app"></main>
+<button class="fab" onclick="quickAdd()">＋</button>
+<nav><div class="navin" id="nav"></div></nav>
+</div>
+<script>
+const KEY="mga-personal-v1";
+const seed={schedules:[
+{id:1,date:"2026-09-20",title:"TV出演",cat:"TV",note:"出演予定をチェック"},
+{id:2,date:"2026-09-25",title:"グッズ発売",cat:"GOODS",note:"欲しいものを確認"},
+{id:3,date:"2026-10-01",title:"チケット応募締切",cat:"TICKET",note:"応募忘れ注意"}],
+goods:[{id:1,name:"ツアーTシャツ",price:4500,status:"欲しい"},{id:2,name:"タオル",price:2500,status:"購入済"},{id:3,name:"キーホルダー",price:1200,status:"購入済"}],
+money:[{id:1,date:"2026-09-01",cat:"グッズ",amount:4500,note:"Tシャツ"}],
+lives:[{id:1,date:"2026-08-10",name:"参戦ライブ",venue:"東京",attended:true,setlist:["ダーリン","ライラック"],report:"最高だった！"}],
+songs:["ダーリン","ライラック","クスシキ","ケセラセラ","青と夏","Soranji","点描の唄","僕のこと","インフェルノ","StaRt","ロマンチシズム","Magic","ニュー・マイ・ノーマル","ダンスホール"],
+profile:{favorite:"ダーリン",firstLive:"—"}};
+let db=JSON.parse(localStorage.getItem(KEY)||"null")||seed;
+let page="home";
+function save(){localStorage.setItem(KEY,JSON.stringify(db))}
+function yen(n){return "¥"+Number(n||0).toLocaleString("ja-JP")}
+function icon(p){return ({home:"🍏",schedule:"📅",goods:"🛍️",money:"💰",music:"🎧",live:"🎤"})[p]}
+function renderNav(){document.getElementById("nav").innerHTML=["home","schedule","goods","money","music","live"].map(p=>`<button class="${page==p?"active":""}" onclick="go('${p}')"><span class="ni">${icon(p)}</span>${({home:"ホーム",schedule:"予定",goods:"グッズ",money:"お金",music:"音楽",live:"ライブ"})[p]}</button>`).join("")}
+function go(p){page=p;renderNav();render()}
+function render(){renderNav();let a=document.getElementById("app"); if(page=="home")a.innerHTML=home();if(page=="schedule")a.innerHTML=schedule();if(page=="goods")a.innerHTML=goods();if(page=="money")a.innerHTML=money();if(page=="music")a.innerHTML=music();if(page=="live")a.innerHTML=live()}
+function home(){let total=db.money.reduce((s,x)=>s+Number(x.amount),0),heard=[...new Set(db.lives.flatMap(x=>x.setlist||[]))].length;let next=[...db.schedules].sort((a,b)=>a.date.localeCompare(b.date)).find(x=>x.date>=new Date().toISOString().slice(0,10));
+return `<section class="hero"><div class="small">MY MRS. GREEN APPLE</div><h1>私のミセス活動を<br>ひとつに。</h1><p>${next?`次の予定：${next.date} ${next.title}`:"予定を追加してみよう"}</p></section>
+<div class="grid"><div class="stat"><b>${db.lives.filter(x=>x.attended).length}</b><span>参戦ライブ</span></div><div class="stat"><b>${heard}</b><span>ライブで聴いた曲</span></div><div class="stat"><b>${yen(total)}</b><span>推し活累計</span></div><div class="stat"><b>${db.goods.filter(x=>x.status=="欲しい").length}</b><span>欲しいグッズ</span></div></div>
+<div class="section"><h2>すぐ開く</h2><div class="row">${["schedule","goods","money","music","live"].map(p=>`<div class="card" onclick="go('${p}')"><div class="icon">${icon(p)}</div><b>${({schedule:"予定",goods:"グッズ",money:"お金",music:"音楽",live:"ライブ"})[p]}</b><span class="muted">タップして管理</span></div>`).join("")}</div></div>
+<div class="section"><h2>MY DATA</h2><div class="list"><div class="item"><div>❤️</div><div class="grow"><b>好きな曲</b><div class="muted">${db.profile.favorite||"未登録"}</div></div></div><div class="item"><div>🎫</div><div class="grow"><b>初参戦</b><div class="muted">${db.profile.firstLive||"未登録"}</div></div></div></div></div>
+<div class="section"><h2>AI相談</h2><div class="card" style="width:100%;min-width:0" onclick="alert('次の段階で、あなたの登録データをもとに相談できるAIを追加できます。')">🤖 <b>ミセスAIに相談する</b><span class="muted">「次の応募期限いつ？」「参戦ライブまとめて！」など</span></div></div>`}
+function schedule(){return `<div class="section"><h2>📅 予定</h2><form onsubmit="addSchedule(event)"><label>予定名</label><input id="st" required placeholder="例：テレビ出演"><label>日付</label><input id="sd" type="date" required><label>種類</label><select id="sc"><option>TV</option><option>EVENT</option><option>TICKET</option><option>GOODS</option><option>OTHER</option></select><label>メモ</label><input id="sn" placeholder="応募期限など"><button class="primary" style="margin-top:12px">予定を追加</button></form><div class="list">${[...db.schedules].sort((a,b)=>a.date.localeCompare(b.date)).map(x=>`<div class="item"><div>📌</div><div class="grow"><b>${x.title}</b><div class="muted">${x.date} · ${x.note||""}</div></div><span class="pill">${x.cat}</span></div>`).join("")||'<div class="empty">予定はまだありません</div>'}</div></div>`}
+function goods(){return `<div class="section"><h2>🛍️ グッズ</h2><form onsubmit="addGoods(event)"><label>グッズ名</label><input id="gn" required placeholder="例：ライブTシャツ"><label>価格</label><input id="gp" type="number" required><label>状態</label><select id="gs"><option>欲しい</option><option>購入済</option></select><button class="primary" style="margin-top:12px">追加</button></form><div class="list">${db.goods.map(x=>`<div class="item"><div class="icon">🛍️</div><div class="grow"><b>${x.name}</b><div class="muted">${yen(x.price)}</div></div><span class="pill">${x.status}</span></div>`).join("")||'<div class="empty">グッズを登録しよう</div>'}</div></div>`}
+function money(){let total=db.money.reduce((s,x)=>s+Number(x.amount),0),cats={};db.money.forEach(x=>cats[x.cat]=(cats[x.cat]||0)+Number(x.amount));return `<div class="section"><h2>💰 推し活のお金</h2><div class="hero"><div class="small">TOTAL</div><div class="money">${yen(total)}</div><p>グッズ・チケット・遠征費などをまとめて記録</p></div><form onsubmit="addMoney(event)"><label>金額</label><input id="ma" type="number" required><label>日付</label><input id="md" type="date" required><label>カテゴリ</label><select id="mc"><option>グッズ</option><option>チケット</option><option>交通</option><option>ホテル</option><option>CD/DVD</option><option>サブスク</option><option>その他</option></select><label>メモ</label><input id="mn"><button class="primary" style="margin-top:12px">支出を追加</button></form><div class="list">${Object.entries(cats).map(([k,v])=>`<div class="item"><div>${({グッズ:"🛍️",チケット:"🎫",交通:"🚃",ホテル:"🏨","CD/DVD":"💿",サブスク:"📱",その他:"📝"})[k]}</div><div class="grow"><b>${k}</b></div><b>${yen(v)}</b></div>`).join("")}</div></div>`}
+function music(){let heard=[...new Set(db.lives.flatMap(x=>x.setlist||[]))];return `<div class="section"><h2>🎧 音楽</h2><div class="grid"><div class="stat"><b>—</b><span>再生回数</span></div><div class="stat"><b>—</b><span>総再生時間</span></div></div><div class="card" style="margin-top:10px;width:100%;min-width:0"><b>Apple Music連携</b><p class="muted">ここは次の段階で連携方式を追加。まずは「ライブで聴いた曲」を自動集計します。</p></div><div class="section"><h2>ライブで聴いた曲 · ${heard.length}曲</h2><div class="list">${db.songs.map(s=>`<div class="item"><div>${heard.includes(s)?"✓":"○"}</div><div class="grow">${s}</div><span class="${heard.includes(s)?"check":"muted"}">${heard.includes(s)?"聴いた":"未体験"}</span></div>`).join("")}</div></div>`}
+function live(){return `<div class="section"><h2>🎤 ライブ記録</h2><form onsubmit="addLive(event)"><label>ライブ名</label><input id="ln" required placeholder="例：○○ TOUR"><label>日付</label><input id="ld" type="date" required><label>会場</label><input id="lv"><label>セットリスト（1曲1行）</label><textarea id="ls" placeholder="ダーリン&#10;ライラック"></textarea><label>ライブレポ</label><textarea id="lr" placeholder="思い出を残そう"></textarea><button class="primary" style="margin-top:12px">ライブを保存</button></form><div class="list">${db.lives.map(x=>`<div class="item"><div class="icon">🎤</div><div class="grow"><b>${x.name}</b><div class="muted">${x.date} · ${x.venue||""}</div>${x.report?`<div class="muted" style="margin-top:5px">「${x.report}」</div>`:""}</div><span class="pill">${(x.setlist||[]).length}曲</span></div>`).join("")}</div></div>`}
+function addSchedule(e){e.preventDefault();db.schedules.push({id:Date.now(),date:sd.value,title:st.value,cat:sc.value,note:sn.value});save();render()}
+function addGoods(e){e.preventDefault();db.goods.push({id:Date.now(),name:gn.value,price:+gp.value,status:gs.value});save();render()}
+function addMoney(e){e.preventDefault();db.money.push({id:Date.now(),date:md.value,cat:mc.value,amount:+ma.value,note:mn.value});save();render()}
+function addLive(e){e.preventDefault();db.lives.push({id:Date.now(),date:ld.value,name:ln.value,venue:lv.value,attended:true,setlist:ls.value.split("\\n").map(x=>x.trim()).filter(Boolean),report:lr.value});save();render()}
+function quickAdd(){let p=prompt("何を追加する？\\n1 予定\\n2 グッズ\\n3 支出\\n4 ライブ");if(p=="1")go("schedule");else if(p=="2")go("goods");else if(p=="3")go("money");else if(p=="4")go("live")}
+render();
+if("serviceWorker" in navigator)navigator.serviceWorker.register("service-worker.js");
+</script>
+</body>
+</html>
